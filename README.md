@@ -1,0 +1,1 @@
+Learn project with Python examples and for homework
