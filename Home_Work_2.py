@@ -172,5 +172,4 @@ magazine_model = BookModel(
 
 magazine = Magazine(magazine_model, 'health')
 
-# print(book.model_dump())
-# pull, push, add branches, merge, merge_conflicts !!!   git checkout -b Test
+
