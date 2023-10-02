@@ -1,5 +1,6 @@
-from pydantic import BaseModel, field_validator
+from pydantic import BaseModel
 from pprint import pprint
+from abc import ABC, abstractmethod
 
 
 class BookModel(BaseModel):
@@ -7,37 +8,48 @@ class BookModel(BaseModel):
     author: str
     issue_date: str
 
-    @field_validator("issue_date")
-    def validate_date(cls, value):
-        if not isinstance(value, str):
-            try:
-                str(value)
-            except Exception as e:
-                print(e)
-            else:
-                return value
+
+class AbstractClass(ABC):
+    @abstractmethod
+    def __init__(self):
+        raise NotImplementedError
+
+    @abstractmethod
+    def __str__(self):
+        raise NotImplementedError
 
 
-class Book():
+class Book(AbstractClass):
     name = None
-    author = None
+    __author = None
     issue_date = None
     book_list = list()
     book_dict = dict()
 
     def __init__(self, book: BookModel):
         self.name = book.name
-        self.author = book.author
+        self.__author = book.author
         self.issue_date = book.issue_date
-        self.book_list.append(self.__repr__())
-        self.book_dict.setdefault(self.author, self.name)
+        self.book_list.append(self.__repr__())  # При создании каждого обьекта закидываю его в список
+        self.book_dict.setdefault(self.__author, self.name)  # Тоже самое но в дикт
 
     def __str__(self):
-        return (f'Book "{self.name.title()}" was written by {self.author.title()} '
+        return (f'Book "{self.name.title()}" was written by {self.__author.title()} '
                 f'and issued {self.issue_date}.')
 
     def __repr__(self):
         return f'{self.name.title()}'
+
+
+class Magazine(Book):
+
+    def __init__(self, book: BookModel, style):
+        super().__init__(book)
+        self.style = style
+
+    def __str__(self):
+        return (f'Magazine "{self.name.title()}" was written by {self.__author.title()},'
+                f' magazine style is {self.style} and issued {self.issue_date}.')
 
 
 # decorator for adding book
@@ -60,20 +72,19 @@ def del_book_decorator(func):
 
 
 class Library():
-    index = -1
 
     def __init__(self):
         self.book_list = Book.book_list
         self.book_dict = Book.book_dict
 
     def __iter__(self):
-        self.index = self.__class__.index
+        self.__index = -1
         return self
 
     def __next__(self):
-        self.index += 1
-        if self.index < len(self.book_list):
-            return self.book_list[self.index]
+        self.__index += 1
+        if self.__index < len(self.book_list):
+            return self.book_list[self.__index]
         else:
             raise StopIteration
 
@@ -89,12 +100,15 @@ class Library():
     @del_book_decorator
     def __delitem__(self, key):
         del self.book_dict[key]
+        print(self.book_dict)
 
     @add_book_decorator
     def __setitem__(self, author, book):
         self.book_dict[author] = book
+        print(self.book_dict)
 
 
+# making BookModel instances
 book_model_1 = BookModel(
     name='Harry Potter',
     author='J.K. Rowling',
@@ -111,6 +125,7 @@ book_model_3 = BookModel(
     issue_date='29/07/1954'
 )
 
+# displaying Book() instances
 print(book1 := Book(book_model_1))
 print(book2 := Book(book_model_2))
 print(book3 := Book(book_model_3))
@@ -130,19 +145,32 @@ print(library['J.R.R. Tolkien'])
 print(library['J.K. Rowling'])
 
 # implemented del method for library
-pprint(library.book_dict)
 del library['Stephen King']
-print(library.book_dict)
+
 
 # implemented set method for library
 library['Stephen King'] = 'It'
-print(library.book_dict)
 
-with open('book_write_list.txt', 'w') as file:
+# context manager to wtite
+with open('book_write_list.txt', 'w') as file_w:
     for author, book in library.book_dict.items():
-        file.write(f'Book "{book}" by {author}\n')
+        file_w.write(f'Book "{book}" by {author}\n')
 
+print('\n')
 
+# context manager to read
+with open('book_write_list.txt', 'r') as file_r:
+    book_list_from_file = [line.strip() for line in file_r.readlines()]
+    pprint(book_list_from_file)
+
+# inheritance
+magazine_model = BookModel(
+    name='Men`s health',
+    author='Adam Campbell',
+    issue_date='08/11/2003'
+)
+
+magazine = Magazine(magazine_model, 'health')
 
 # print(book.model_dump())
 # pull, push, add branches, merge, merge_conflicts !!!   git checkout -b Test
