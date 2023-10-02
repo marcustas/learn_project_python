@@ -13,7 +13,7 @@ def timer(func):
 
 
 @timer
-def long_running_function(num):
+def long_running_function(num: int) -> None:
     for _ in range(num):
         pass
 

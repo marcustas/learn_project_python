@@ -33,7 +33,7 @@ def iter_movies_with_function(movies: MovieCollection = my_movies):
     print(next(movie_iterator))  # Фільм 3: Матриця
 
     # Цей наступний виклик спричинить StopIteration, тому що всі фільми вже були перебрані.
-    print(next(movie_iterator))
+    # print(next(movie_iterator))
 
 
 def iter_movies_with_magic_methods(movies: MovieCollection = my_movies):
