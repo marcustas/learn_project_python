@@ -23,7 +23,7 @@ class FileOpener:
 
 
 def call_class_context_manager():
-    with FileOpener('class_cm.txt', 'w') as file:
+    with FileOpener(filename='class_cm.txt', mode='w') as file:
         file.write('Я був заповнений за допомогою классового контекстного менеджеру!')
 
 
@@ -40,8 +40,7 @@ def call_try_finally_construction():
     except Exception as e:
         print(f'Помилка: {e}')
     finally:
-        if file:
-            file.close()
+        file.close()
 
 
 if __name__ == '__main__':

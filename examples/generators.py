@@ -19,7 +19,7 @@ def use_generator_expression():
 
 
 def use_next():
-    movie_gen = (title for title in MOVIES)
+    movie_gen = (title.upper() for title in MOVIES)
     print(next(movie_gen))  # Виведе "Фільм: Шерлок Голмс"
 
 
