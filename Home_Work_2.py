@@ -31,8 +31,8 @@ class Book(AbstractClass):
         self.name = book.name
         self.__author = book.author
         self.issue_date = book.issue_date
-        self.book_list.append(self.__repr__())  # При создании каждого обьекта закидываю его в список
-        self.book_dict.setdefault(self.__author, self.name)  # Тоже самое но в дикт
+        self.book_list.append(self.__repr__())
+        self.book_dict.setdefault(self.__author, self.name)
 
     def __str__(self):
         return (f'Book "{self.name.title()}" was written by {self.__author.title()} '
