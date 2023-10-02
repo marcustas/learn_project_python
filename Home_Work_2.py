@@ -1,6 +1,7 @@
 from pydantic import BaseModel
 from pprint import pprint
 from abc import ABC, abstractmethod
+from functools import wraps
 
 
 class BookModel(BaseModel):
@@ -54,6 +55,7 @@ class Magazine(Book):
 
 # decorator for adding book
 def add_book_decorator(func):
+    @wraps(func)
     def inner(self, *args, **kwargs):
         print(f'\nNew book "{args[1]}" was succesfully added to Library')
         return func(self, *args, **kwargs)
@@ -63,6 +65,7 @@ def add_book_decorator(func):
 
 # decorator for deleting book
 def del_book_decorator(func):
+    @wraps(func)
     def inner(self, *args, **kwargs):
         if args[0] in self.book_dict.keys():
             print(f'\nBook "{self.book_dict[args[0]]}" was succesfully deleted from Library')
