@@ -2,11 +2,13 @@ from pydantic import BaseModel
 from contextlib import contextmanager
 from abc import ABC, abstractmethod
 
+
 @contextmanager
 def file_opener(filename: str, mode: str):
     file = open(filename, mode)
     yield file
     file.close()
+
 
 class BookModel(BaseModel):
     book_name: str
@@ -15,11 +17,16 @@ class BookModel(BaseModel):
 
 
 class AbstractPublication(ABC):
+    _info_prefix = None
+
     @abstractmethod
     def get_info(self):
         raise NotImplementedError
 
+
 class Book(AbstractPublication):
+    _info_prefix = 'Book'
+
     def __init__(self, model: BookModel):
         self._model = model
         self.book_name = model.book_name
@@ -33,15 +40,18 @@ class Book(AbstractPublication):
         return self.__str__()
 
     def get_info(self) -> str:
-        return f'Book title: {self._model.book_name}\nAuthor: {self._model.author}\nYear:{self._model.year}'
+        return (f'{self._info_prefix} title: {self._model.book_name}\nAuthor: {self._model.author}\n'
+                f'Year:{self._model.year}')
 
 
 class Magazine(Book):
+    _info_prefix = 'Magazine'
+
     def __init__(self, model: BookModel):
         super().__init__(model)
 
-    def get_info(self) -> str:
-        return f'Magazine title: {self._model.book_name}\nAuthor: {self._model.author}\nYear:{self._model.year}'
+    # def get_info(self) -> str:
+    #     return f'Magazine title: {self._model.book_name}\nAuthor: {self._model.author}\nYear:{self._model.year}'
 
 
 class Library:
@@ -78,6 +88,7 @@ class Library:
             with open('log.txt', 'w', encoding='UTF-8') as file:
                 file.write(f"Книга '{args[1].book_name}' була додана до бібліотеки.\n")
             return result
+
         return wrapper
 
     def is_exist(func):
@@ -86,12 +97,12 @@ class Library:
                 return func(self, book)
             else:
                 print(f"Книги '{book.book_name}' не існує у бібліотеці")
+
         return wrapper
 
     @logger
     def add_book(self, book: Book):
         self.book_collection.append(book)
-
 
     def add_books(self, books: [Book]):
         for book in books:
@@ -103,62 +114,37 @@ class Library:
             self.book_collection.remove(book)
 
 
-# books_list = Library([book_1, book_2, book_3])
-#
-#
-# not_existing_book_model = BookModel(book_name = 'Basdasad4', author = 'Unknown', year = 165436)
-#
-# books_list.add_book(new_book_model)
-# books_list.add_book(mag_1)
-#
-# books_list.del_book(not_existing_book_model)
-#
-# books_list.save_data()
-# books_list.load_data()
-
-# print(*books_list, sep=',')
-
-# Main code
-
-
-
-Lib = Library() #creating a Library
+Lib = Library()  # creating a Library
 
 # Creating models and inctances
-book_model_1 = BookModel(book_name = 'Book1', author = 'Conan Doyle', year = 1256)
-book_model_2 = BookModel(book_name = 'Book2', author = 'Johnathan Swift', year = 1956)
-book_model_3 = BookModel(book_name = 'Book3', author = 'Anderson', year = 1656)
+book_model_1 = BookModel(book_name='Book1', author='Conan Doyle', year=1256)
+book_model_2 = BookModel(book_name='Book2', author='Johnathan Swift', year=1956)
+book_model_3 = BookModel(book_name='Book3', author='Anderson', year=1656)
 
-mag_model_1 = BookModel(book_name = 'Magazine', author = 'Johnathan Swift', year = 1656)
-new_book_model = BookModel(book_name = 'Book4', author = 'Unknown', year = 1666)
+mag_model_1 = BookModel(book_name='Magazine', author='Johnathan Swift', year=1656)
+new_book_model = BookModel(book_name='Book4', author='Unknown', year=1666)
 
-book_1 = Book(book_model_1)
-book_2 = Book(book_model_2)
-book_3 = Book(book_model_3)
+book_1 = Book(model=book_model_1)
+book_2 = Book(model=book_model_2)
+book_3 = Book(model=book_model_3)
 
-mag_1 = Magazine(mag_model_1)
-new_book = Book(new_book_model)
+mag_1 = Magazine(model=mag_model_1)
+new_book = Book(model=new_book_model)
 
-Lib.add_books([book_1, book_2, book_3, mag_1]) #adding books to library
+Lib.add_books([book_1, book_2, book_3, mag_1])  # adding books to library
 
-print(Lib.book_collection) #print all books in Library
+print(Lib.book_collection)  # print all books in Library
 
-print(*Lib.book_by_author_gen('Johnathan Swift'), sep=',') #print list of books by current author
+print(*Lib.book_by_author_gen('Johnathan Swift'), sep=',')  # print list of books by current author
 
-Lib.save_data() #save data to file
+Lib.save_data()  # save data to file
 
-Lib.del_book(book_2) #deleting a book
+Lib.del_book(book_2)  # deleting a book
 
-print(Lib.book_collection) #print all books in Library
+print(Lib.book_collection)  # print all books in Library
 
-loaded_data = Lib.load_data() #load data from file
+loaded_data = Lib.load_data()  # load data from file
 
 Lib.add_books(loaded_data)
 
-print(Lib.book_collection) #print all books in Librar
-
-
-
-
-
-
+print(Lib.book_collection)  # print all books in Librar
