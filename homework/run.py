@@ -3,6 +3,8 @@ from library import Library
 from models import BookModel, MagazineModel
 
 if __name__ == '__main__':
+    library = Library()
+
     book_model1 = BookModel(name='Rich Dad Poor Dad', author='Robert Kiyosaki', year_of_publish=1997)
     book_model2 = BookModel(name='Your Money Or Your Life', author='Joseph R. Dominguez', year_of_publish=1992)
     book_model3 = BookModel(name='Rich Dads Cashflow Quadrant', author='Robert Kiyosaki', year_of_publish=1998)
@@ -22,7 +24,6 @@ if __name__ == '__main__':
     print(my_magazine1.display_info())
     print(my_magazine2.display_info())
 
-    library = Library()
     library.add_book_to_library(my_book1)
     library.add_book_to_library(my_book2)
     library.add_book_to_library(my_book3)
@@ -30,17 +31,16 @@ if __name__ == '__main__':
     library.add_book_to_library(my_magazine2)
 
     library.get_books_from_library()
+
     library.iterate_books()
     for book in library.get_books_from_library_by_author("Robert Kiyosaki"):
         print(book)
 
+    library.write_library_to_file('library.txt')
 
     library.delete_book_from_library(my_book2)
     library.delete_book_from_library(my_book4)
-    library.get_books_from_library()
 
-
-    library.write_library_to_file('library.txt')
     library2 = Library()
     loaded_publications = library2.read_library_from_file('library.txt')
     library2.get_books_from_library()
