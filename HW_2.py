@@ -1,6 +1,27 @@
-from pydantic import BaseModel
-from contextlib import contextmanager
 from abc import ABC, abstractmethod
+from contextlib import contextmanager
+
+from pydantic import BaseModel
+
+
+def logger(func):
+    def wrapper(*args, **kwargs):
+        result = func(*args, **kwargs)
+        with open('log.txt', 'w', encoding='UTF-8') as file:
+            file.write(f"Книга '{args[1].book_name}' була додана до бібліотеки.\n")
+        return result
+
+    return wrapper
+
+
+def is_exist(func):
+    def wrapper(self, book):
+        if book in self.book_collection:
+            return func(self, book)
+        else:
+            print(f"Книги '{book.book_name}' не існує у бібліотеці")
+
+    return wrapper
 
 
 @contextmanager
@@ -50,9 +71,6 @@ class Magazine(Book):
     def __init__(self, model: BookModel):
         super().__init__(model)
 
-    # def get_info(self) -> str:
-    #     return f'Magazine title: {self._model.book_name}\nAuthor: {self._model.author}\nYear:{self._model.year}'
-
 
 class Library:
     def __init__(self):
@@ -81,24 +99,6 @@ class Library:
     def load_data(self):
         with file_opener('library_list.txt', 'r') as file:
             return file.read().strip().split('\n')
-
-    def logger(func):
-        def wrapper(*args, **kwargs):
-            result = func(*args, **kwargs)
-            with open('log.txt', 'w', encoding='UTF-8') as file:
-                file.write(f"Книга '{args[1].book_name}' була додана до бібліотеки.\n")
-            return result
-
-        return wrapper
-
-    def is_exist(func):
-        def wrapper(self, book):
-            if book in self.book_collection:
-                return func(self, book)
-            else:
-                print(f"Книги '{book.book_name}' не існує у бібліотеці")
-
-        return wrapper
 
     @logger
     def add_book(self, book: Book):
@@ -139,7 +139,7 @@ print(*Lib.book_by_author_gen('Johnathan Swift'), sep=',')  # print list of book
 
 Lib.save_data()  # save data to file
 
-Lib.del_book(book_2)  # deleting a book
+Lib.del_book(book=book_2)  # deleting a book
 
 print(Lib.book_collection)  # print all books in Library
 
