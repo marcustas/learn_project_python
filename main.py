@@ -59,24 +59,45 @@ class BookIterator:
         raise StopIteration
 
 
+book_iterator = BookIterator(lit_list)
+
+
 def author_books_gen(book_list: list, chosen_author: str):
     for book in book_list:
         if book.author == chosen_author:
             yield book
 
 
-# class Library(BookIterator):
-#
-#     def __init__(self, book_list: list = book_list):
-#         self.book_list = book_list
-#
-#     def book_remove(self):
-#         book_list.remove()
-#
+def make_book():
+    type_check = str(input(
+        "\n Would you like to add a book or a magazine? "
+        "(Write \"Book\" to add a book, write \"Magazine\" to add a book): "))
+    lib.show_ids()
+
+    if type_check.lower() == "book":
+        lit_output = lit_class.BookModel(title=str(input("\nPlease, enter the book's title: ")),
+                                         author=str(input("Please, enter the book's author: ")),
+                                         year=int(input("Please, enter the year when the book was written: ")),
+                                         lib_id=int(input("Create a library id for your book (The id can't be repeated or be < 0): "))
+                                         )
+
+    elif type_check.lower() == "magazine":
+        lit_output = lit_class.MagazineModel(title=str(input("\nPlease, enter the magazine's title: ")),
+                                             author=str(input("Please, enter the magazine's main author: ")),
+                                             month=str(input("Please, enter the month when the journal was published: ")),
+                                             type=str(input("Please, enter the type of Journal: ")),
+                                             year=int(input("Please, enter the year when the magazine was published: ")),
+                                             lib_id=int(input("Create a library id for your magazine (The id can't be repeated): "))
+                                             )
+    else:
+        return None
+
+    return lit_output
+
 
 @contextmanager
 def file_opener(filename: str, mode: str):
-    """Opens the file in certain mode for further editing and closes it afterwards"""
+    """Opens the file in certain mode for further editing and closes it afterward"""
     file = open(filename, mode)
     yield file
     file.close()
@@ -90,89 +111,54 @@ def call_func_context_manager():
         print("The files has successfully been changed")
 
 
+class Library:
+
+    def show_books(self):
+        print("\nHere are the books, currently present at the library and their library id's: ", end=' ')
+        for book in book_iterator:
+            print("\"" + book.title + "\"" + " (" + str(book.lib_id) + ")", end=", ")
+
+    def show_ids(self):
+        print("\nHere are the library ids, currently used: ", end=' ')
+        for book in book_iterator:
+            print(f"({book.lib_id})", end=", ")
+
+    def show_author_books(self):
+        print("\n")
+        print(f"Here are the books written by {chosenAuthor}: ", end=" ")
+        for book in author_books_gen(lit_list, chosenAuthor):
+            print("\"" + book.title + "\"", end="; ")
+
+    @book_logger
+    def add_book(self, lit_output):
+        assert lit_output is not None, "This book is None"
+        found = False
+        for book in lit_list:
+            if book.lib_id == lit_output.lib_id:
+                found = True
+                break
+        assert not found, "You're trying to create a book with the existing library id"
+        lit_list.append(lit_output)
+        print(f"\nYour book \"{lit_output.title}\" has successfully been added to the library.")
+
+    @book_checker
+    def book_remove(self, remove_id):
+        for book in lit_list:
+            if book.lib_id == remove_id:
+                lit_list.remove(book)
+                break
+
+        print("\nYour book has successfully been removed from the library. Here is the new list: ")
+        lib.show_books()
+
+
+lib = Library()
+
+lib.show_books()
+lib.show_author_books()
 # call_func_context_manager()
+lib.show_books()
+lib.book_remove(int(input("\nPlease, tell us the library id of the book you'd like to remove: ")))
+lib.add_book(make_book())
+lib.show_books()
 
-
-book_iterator = BookIterator(lit_list)
-
-
-def show_books():
-    print("\nHere are the books, currently present at the library and their library id's: ", end=' ')
-    for book in book_iterator:
-        print("\"" + book.title + "\"" + " (" + str(book.lib_id) + ")", end=", ")
-
-def show_ids():
-    print("\nHere are the library ids, currently used: ", end=' ')
-    for book in book_iterator:
-        print(f"({book.lib_id})", end=", ")
-
-
-def show_author_books():
-    print("\n")
-    print(f"Here are the books written by {chosenAuthor}: ", end=" ")
-    for book in author_books_gen(lit_list, chosenAuthor):
-        print("\"" + book.title + "\"", end="; ")
-
-
-@book_checker
-def book_remove(remove_id):
-    for book in lit_list:
-        if book.lib_id == remove_id:
-            lit_list.remove(book)
-            break
-
-    print("\nYour book has successfully been removed from the library. Here is the new list: ")
-    show_books()
-
-
-def make_book():
-    type_check = str(input(
-        "\n Would you like to add a book or a magazine? "
-        "(Write \"Book\" to add a book, write \"Magazine\" to add a book): "))
-    show_ids()
-
-    if type_check.lower() == "book":
-        lit_output = lit_class.BookModel(title=str(input("\nPlease, enter the book's title: ")),
-                               author=str(input("Please, enter the book's author: ")),
-                               year=int(input("Please, enter the year when the book was written: ")),
-                               lib_id=int(
-                                 input("Create a library id for your book (The id can't be repeated or be < 0): "))
-                               )
-
-    elif type_check.lower() == "magazine":
-        lit_output = lit_class.MagazineModel(title=str(input("\nPlease, enter the magazine's title: ")),
-                                   author=str(input("Please, enter the magazine's main author: ")),
-                                   month=str(input("Please, enter the month when the journal was published: ")),
-                                   type=str(input("Please, enter the type of Journal: ")),
-                                   year=int(input("Please, enter the year when the magazine was published: ")),
-                                   lib_id=int(input(
-                                    "Create a library id for your magazine (The id can't be repeated): "))
-                                   )
-    else:
-        return None
-
-    return lit_output
-
-
-@book_logger
-def add_book(lit_output):
-    assert lit_output is not None, "This book is None"
-    found = False
-    for book in lit_list:
-        if book.lib_id == lit_output.lib_id:
-            found = True
-            break
-    assert not found, "You're trying to create a book with the existing library id"
-    lit_list.append(lit_output)
-    print(f"\nYour book \"{lit_output.title}\" has successfully been added to the library.")
-
-
-add_book(make_book())
-
-# show_books()
-# book_remove(int(input("\nPlease, tell us the library id of the book you'd like to remove: ")))
-
-
-class Library(lit_class.Book, lit_class.Magazine):
-
-    pass
