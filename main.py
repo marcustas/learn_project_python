@@ -139,6 +139,7 @@ if __name__ == "__main__":
     lib.read_with_context_manager(initial_file_path)
     lib.show_books()
     lib.show_author_books(chosenAuthor)
+    lib.show_ids()
     lib.book_remove(int(input("\nPlease, tell us the library id of the book you'd like to remove: ")))
     lib.add_book(add_book_file_path)
     lib.show_books()
