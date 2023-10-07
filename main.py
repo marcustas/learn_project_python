@@ -10,7 +10,7 @@ def book_logger(func):
         with open('log.txt', 'a') as file:
             file.write(
 
-                f"Function '{func.__name__}' has been called."
+                f"Function '{func.__name__}' has been called.\n"
                 f"{result}",
             )
         return result
@@ -29,10 +29,6 @@ def book_checker(func):
         return result
 
     return wrapper
-
-
-# chosenAuthor = str(input("What author's books would you like to see?"))
-chosenAuthor = "J.K. Rowling"
 
 
 class BookIterator:
@@ -67,8 +63,6 @@ def file_opener(filename: str, mode: str):
 
 class Library:
 
-
-
     def __init__(self, from_file: str = None):
         self.lit_list = []
         self.book_iterator = BookIterator(self.lit_list)
@@ -83,22 +77,24 @@ class Library:
         for book in self.book_iterator:
             print(f"({book.lib_id})", end=", ")
 
-    def show_author_books(self):
-        print("\n")
-        print(f"Here are the books written by {chosenAuthor}: ", end=" ")
-        for book in author_books_gen(self.lit_list, chosenAuthor):
-            print("\"" + book.title + "\"", end="; ")
+    def show_author_books(self, author):
+        for book in self.lit_list:
+            if book.author == chosenAuthor:
+                print(f"\nHere are the books written by {author}: ", end=" ")
+                for book in author_books_gen(self.lit_list, author):
+                    print("\"" + book.title + "\"", end="; ")
+                break
 
-    def write_with_context_manager(self):
-        with file_opener('book_list.csv', 'w') as csvfile:
+    def write_with_context_manager(self, file_path):
+        with file_opener(file_path, 'w') as csvfile:
             w = csv.DictWriter(csvfile, MagazineModel.model_fields.keys())
             w.writeheader()
             books = list([b.model_dump() for b in self.lit_list])
             w.writerows(books)
             print("\nThe book list has successfully been updated")
 
-    def read_with_context_manager(self):
-        with file_opener('book_list.csv', 'r') as csvfile:
+    def read_with_context_manager(self, file_path):
+        with file_opener(file_path, 'r') as csvfile:
             csv_reader = csv.DictReader(csvfile, delimiter=',')
             self.lit_list.clear
             for row in csv_reader:
@@ -109,8 +105,8 @@ class Library:
                 self.lit_list.append(l)
 
     @book_logger
-    def add_book(self):
-        with file_opener('book_list.csv', 'r') as csvfile:
+    def add_book(self, file_path):
+        with file_opener(file_path, 'r') as csvfile:
             csv_reader = csv.DictReader(csvfile, delimiter=',')
             for row in csv_reader:
                 if row['month'] == '':
@@ -118,7 +114,7 @@ class Library:
                 else:
                     l = MagazineModel(**row)
                 self.lit_list.append(l)
-        lib.write_with_context_manager()
+        lib.write_with_context_manager(edited_file_path)
         print(f"\nThe new book \"{l.title}\" has successfully been added to the library.")
 
     @book_checker
@@ -127,20 +123,22 @@ class Library:
             if book.lib_id == remove_id:
                 self.lit_list.remove(book)
                 break
-        lib.write_with_context_manager()
+        lib.write_with_context_manager(edited_file_path)
         print("\nChosen book has successfully been removed from the library. Here is the new list: ")
         lib.show_books()
 
-if __name__=="__main__":
-    initial_file_path = 'book_list.csv'
+
+if __name__ == "__main__":
+    initial_file_path = 'initial_book_list.csv'
     edited_file_path = 'edited_bl.csv'
+    add_book_file_path = 'add_book.csv'
+    # chosenAuthor = str(input("What author's books would you like to see?"))
+    chosenAuthor = "J.K. Rowling"
     lib = Library()
 
+    lib.read_with_context_manager(initial_file_path)
     lib.show_books()
-    lib.read_with_context_manager()
-    lib.show_author_books()
-    # lib.write_with_context_manager()
+    lib.show_author_books(chosenAuthor)
     lib.book_remove(int(input("\nPlease, tell us the library id of the book you'd like to remove: ")))
-    # lib.write_with_context_manager()
-    # lib.add_book()
-    # lib.show_books()
+    lib.add_book(add_book_file_path)
+    lib.show_books()
