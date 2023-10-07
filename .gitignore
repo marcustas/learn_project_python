@@ -1,1 +1,4 @@
 .ruff_cache
+.idea
+examples
+log.txt
