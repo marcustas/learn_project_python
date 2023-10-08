@@ -1,4 +1,4 @@
-[tool.poetry]
+poetry install[tool.poetry]
 name = 'learn_python'
 version = "0.1.0"
 description = "Learn python"
