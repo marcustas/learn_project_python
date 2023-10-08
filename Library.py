@@ -13,10 +13,10 @@ class BookModel(Publication):
     def display_info(self):
         return f'{self.title} - {self.author} from {self.year} year'
 
-class MagazineModel(Publication):
+class MagazineModel(BookModel):
     month: str
-    def display_info(self):
-        return f'{self.title} - {self.author} from {self.year} year and {self.month} month'
+
+
 
 
 class AbstractPublication(ABC):
@@ -35,6 +35,8 @@ class Book(AbstractPublication):
     def display_info(self):
         return str(self)
 
+class Magazine(Book):
+    pass
 
 def log_book(func):
     def wrapped(self, book):
@@ -107,10 +109,6 @@ class Library(Book):
                 elif len(book_info)==3:
                     title, author, year = book_info
                     self.add_book(BookModel(title=title, author=author, year=int(year)))
-
-
-class Magazine(Book):
-    pass
 
 
 # Створення книг та журналів
