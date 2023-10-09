@@ -41,7 +41,6 @@ class Library:
         for publication in self.collection:
             if publication.author == author:
                 print(publication)
-        # return (publication for publication in self.collection if publication.author == author)
 
     def write_to_file(self):
         with open('publication_list.txt', 'w') as file:

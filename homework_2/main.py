@@ -10,11 +10,13 @@ book_model_2 = BookModel(**BOOKS[0])
 book_model_1 = BookModel(**BOOKS[1])
 book_model_3 = BookModel(**BOOKS[2])
 magazine_model_1 = MagazineModel(**MAGAZINES[0])
+
 # додавання їх у бібліотеку
 library.add_publication(book_model_2)
 library.add_publication(book_model_1)
 library.add_publication(book_model_3)
 library.add_publication(magazine_model_1)
+
 # виведення списку книг у бібліотеці
 library.get_publication_list()
 
