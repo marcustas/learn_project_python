@@ -24,7 +24,7 @@ class Library:
     def __init__(self):
         self.collection: List[BookModel] = []
 
-    def get_publication_list(self) -> list[BookModel]:
+    def get_publication_list(self):
         for publication in self.collection:
             print(publication)
 
@@ -38,9 +38,8 @@ class Library:
             self.collection.remove(publication)
 
     def get_publication_by_author(self, author: str):
-        for publication in self.collection:
-            if publication.author == author:
-                print(publication)
+        publication_by_author = [publication for publication in self.collection if publication.author == author]
+        print(*publication_by_author)
 
     def write_to_file(self):
         with open('publication_list.txt', 'w') as file:
