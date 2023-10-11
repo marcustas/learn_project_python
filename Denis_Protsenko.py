@@ -18,13 +18,14 @@ class BookModel(BaseModel):
     year: int
 
 
+# Клас моделі журналу
 class MagazineModel(BaseModel):
     title: str
     author: str
     year: int
 
 
-# Клас книги, що наслідується від моделі книги та абстрактного класу
+# Клас книги
 class Book(PublicModel):
     def __init__(self, book_model: BookModel):
         self.title = book_model.title
@@ -43,7 +44,7 @@ class Book(PublicModel):
         return hash((self.title, self.author, self.year))
 
 
-# Клас журналу, що наслідується від моделі книги та абстрактного класу
+# Клас журналу
 class Magazine(PublicModel):
     def __init__(self, magazine_model: MagazineModel):
         self.title = magazine_model.title
@@ -168,6 +169,7 @@ if __name__ == "__main__":
     book_model3 = BookModel(title="Книга: Магическая формула", author="Хэл Элрод", year=2019)
     journal_model1 = MagazineModel(title="Журнал: The Ukrainian Week", author="Ukraine", year=2019)
 
+    # Виведення списку бібліотеки
     book1 = Book(book_model1)
     book2 = Book(book_model2)
     book3 = Book(book_model3)
@@ -210,7 +212,7 @@ if __name__ == "__main__":
             book_model = BookModel(title=book_info[0], author=book_info[1], year=int(book_info[2]))
             library.add_book(book_model)
 
-    # Виведення списку книг бібліотеки після додавання
+    # Виведення списку бібліотеки після додавання
     print("\nСписок у бібліотеці після додавання з файлу:")
     for book in library:
         print(book.book_info())
