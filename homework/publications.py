@@ -19,7 +19,7 @@ class Book(AbstractPublication):
         return self.__str__()
 
     def to_dict(self):
-        return self._model.dict()
+        return self._model.model_dump()
 
 
 class Magazine(AbstractPublication):
@@ -34,4 +34,4 @@ class Magazine(AbstractPublication):
         return self.__str__()
 
     def to_dict(self):
-        return self._model.dict()
+        return self._model.model_dump()
