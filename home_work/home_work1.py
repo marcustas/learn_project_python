@@ -37,20 +37,6 @@ class Journal(Book):
         self._model = model
 
 
-@contextmanager
-def create_list(filename, mode):
-    file = open(filename, mode)
-    yield file
-    file.close()
-
-
-@contextmanager
-def load_list_books(filename):
-    with open(filename, 'r') as file:
-        book_list = file.readlines()
-        yield book_list
-
-
 def add_book_notif(func):
     def wrapper(self, reading):
         result = func(self, reading)
@@ -88,6 +74,7 @@ class Library:
             if book._model.author == author:
                 yield f'Book {book._model.title} writed by {book._model.author}'
 
+    @contextmanager
     def download_list_manager(self):
         data = []
         for book in self.list_of_books:
@@ -96,10 +83,10 @@ class Library:
                 'author': book._model.author,
                 'created_date': book._model.created_date.isoformat(),
             })
-
         with open('book_list1.json', 'w') as file:
             json.dump(data, file, indent=4)
 
+    @contextmanager
     def read_list(self, file):
         with open(file, 'r') as file_r:
             book_data = json.load(file_r)
@@ -110,6 +97,7 @@ class Library:
                 book_model = BookModel(title=title, author=author, created_date=created_date)
                 book = Book(book_model)
                 self.list_of_books.append(book)
+
 
 book_model1 = BookModel(
     title='Sherlock Holmes',
