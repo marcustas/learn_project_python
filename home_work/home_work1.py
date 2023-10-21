@@ -15,7 +15,7 @@ class BookModel(BaseModel):
 
 
 class JournalModel(BookModel):
-    last_printed_day: date
+    theme: str
 
 
 class AbstractReading(ABC):
@@ -63,7 +63,10 @@ class Library:
 
     @check_book
     def del_material(self, reading):
-        self.list_of_books.remove(reading)
+        try:
+            self.list_of_books.remove(reading)
+        except:
+            raise ValueError(f'Book{reading._model.title} is not found')
 
     def books_on_the_library(self):
         for book in self.list_of_books:
@@ -75,28 +78,24 @@ class Library:
                 yield f'Book {book._model.title} writed by {book._model.author}'
 
     @contextmanager
-    def download_list_manager(self):
+    def download_list_manager(self, filename):
         data = []
         for book in self.list_of_books:
-            data.append({
-                'title': book._model.title,
-                'author': book._model.author,
-                'created_date': book._model.created_date.isoformat(),
-            })
-        with open('book_list1.json', 'w') as file:
+            dictionary = dict(book._model)
+            if dictionary['created_date']:
+                dictionary['created_date'] = dictionary['created_date'].isoformat()
+            data.append(dictionary)
+        with open(filename, 'w') as file:
             json.dump(data, file, indent=4)
+        yield
 
     @contextmanager
-    def read_list(self, file):
-        with open(file, 'r') as file_r:
+    def read_list(self, filename):
+        with open(filename, 'r') as file_r:
             book_data = json.load(file_r)
-            for book_info in book_data:
-                title = book_info['title']
-                author = book_info['author']
-                created_date = date.fromisoformat(book_info['created_date'])
-                book_model = BookModel(title=title, author=author, created_date=created_date)
-                book = Book(book_model)
-                self.list_of_books.append(book)
+            books = [Book(BookModel(**data)) for data in book_data]
+            self.list_of_books.extend(books)
+        yield
 
 
 book_model1 = BookModel(
@@ -118,14 +117,13 @@ journal_model1 = JournalModel(
     title='Forbes',
     author='Charles Forbes',
     created_date=date(1917, 1, 1),
-    last_printed_day=date(1917, 1, 15),
+    theme='Politic',
 )
 
 book1 = Book(book_model1)
 book2 = Book(book_model2)
 book3 = Book(book_model3)
 journal1 = Journal(journal_model1)
-
 
 library = Library()
 library.add_material(book1)
@@ -138,13 +136,12 @@ library.books_on_the_library()
 for book_info in library.books_generator('Arthur Conan Doyle'):
     print(book_info)
 
-library.download_list_manager()
+with library.download_list_manager('book_list.json'):
+    pass
 
 library.del_material('Forbes')
 library.books_on_the_library()
 
-library.read_list('book_list1.json')
+with library.read_list('book_list.json'):
+    pass
 library.books_on_the_library()
-
-
-
