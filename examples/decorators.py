@@ -9,6 +9,7 @@ def timer(func):
         elapsed_time = end_time - start_time
         print(f"Функція '{func.__name__}' виконувалася {elapsed_time:.4f} секунд")
         return result
+
     return wrapper
 
 
@@ -31,6 +32,7 @@ def logger(func):
                 f" Результат: {result}\n",
             )
         return result
+
     return wrapper
 
 
